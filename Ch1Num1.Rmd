@@ -1,0 +1,73 @@
+---
+title: 'Chapter 1 #1'
+author: "Bonnie Romeo"
+date: "2/4/2020"
+output: word_document
+---
+```{r, include = FALSE}
+library(ma391romeo)
+
+```
+
+A) 
+
+```{r}
+profit = function (x){
+  return((1500-100*x)*(1+.15*x))
+}
+dProfit = function(x){fprime(profit,x)}
+bisection(dProfit,0,20)
+```
+
+B) 
+
+```{r}
+sale = seq(0.05,0.5,0.01)
+ans = 0
+ans.profit=0
+for (i in 1:length(sale)){
+    profit = function (x){
+      return((1500-100*x)*(1+sale[i]*x))
+    }
+    dProfit = function(x){fprime(profit,x)}
+    ans[i] = bisection(dProfit,-10,20)    
+    ans.profit[i]=profit(ans[i])
+}
+result = data.frame(salesIncrease=sale,optimalRebate=ans,profit=ans.profit)
+print(result)
+```
+
+C)
+
+```{r}
+profit = function (x){
+  return((1500-100*x)*(1+.10*x))
+}
+dProfit = function(x){fprime(profit,x)}
+bisection(dProfit,0,20)
+
+rebateSize = seq(50,200,10)
+ans = 0
+ans.profit=0
+for (i in 1:length(rebateSize)){
+    profit = function (x){
+      return((1500-rebateSize[i]*x)*(1+0.15*x))
+    }
+    dProfit = function(x){fprime(profit,x)}
+    ans[i] = bisection(dProfit,-10,20)    
+    ans.profit[i]=profit(ans[i])
+}
+result=data.frame(rebateSize=rebateSize,optimal=ans,profit=ans.profit)
+print(result)
+```
+
+D)
+
+```{r}
+profit = function (x){
+  return((1500-100*x)*(1+.11*x))
+}
+dProfit = function(x){fprime(profit,x)}
+bisection(dProfit,0,20)
+```
+
