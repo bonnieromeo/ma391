@@ -1,0 +1,32 @@
+---
+title: 'Ch 2 #10'
+author: "Bonnie Romeo"
+
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+library(lpSolve)
+library(MASS)
+library(NlcOptim)
+```
+A)
+
+```{r}
+f.obj = c(250,250,250)
+f.obj
+f.con = matrix(c(1,1,1,550,800,400,1,0,0,0,1,0,0,0,1),nrow=5,byrow=T) 
+f.con
+f.dir = c("<=","<=","<=","<=", "<=")
+f.rhs = c(100,50000,30,40,50)
+f.rhs
+```
+
+```{r}
+ans = lp("max",f.obj,f.con,f.dir,f.rhs)
+print(ans$solution)
+print(ans$objval)
+print(ans$duals)
+```
+
