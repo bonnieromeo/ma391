@@ -1,0 +1,78 @@
+---
+title: 'CHapter 1 #7'
+author: "Bonnie Romeo"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+newton = function(f,x0, eps = 0.0001){
+  xn = x0
+  n = 1
+  while(abs(f(xn))>eps & n < 1000){
+    xn = xn-f(xn)/fprime(f,xn) 
+    n = n + 1
+  }
+  return(xn)
+}
+```
+
+A)
+
+```{r}
+f = function(x){((200+5*x)*(0.65-0.01*x)-(100+0.45*x))/(x+90)}
+x = c(10,10)
+dF = fprime(f,x)
+
+ans = bisection(dF,0,35)
+print(ans)
+
+newton(dF, 5)
+
+```
+
+B)
+
+```{r}
+obj = function(r){
+  f = function(x){((200+r*x)*(0.65-0.01*x)-(100+0.45*x))/(x+90)}
+  dF = function(x){fprime(f,x)}
+  ans = newton(dF,7)
+  return(c(ans,f(ans)))
+}
+r = seq(3, 7, 1)
+ans.time = 0
+ans.profit = 0
+
+for (i in 1:length(r)){
+  sol = obj(r[i])
+  ans.time[i] = sol[1]
+  ans.profit[i] = sol[2]
+}
+
+result = data.frame(rate=r, time=ans.time,profit = ans.profit)
+print(result)
+```
+C)
+
+```{r}
+obj = function(r){
+  f = function(x){((200+5*x)*(0.65-r*x)-(100+0.45*x))/(x+90)}
+  dF = function(x){fprime(f,x)}
+  ans = newton(dF,7)
+  return(c(ans,f(ans)))
+}
+r = seq(0.01, 0.09, 0.01)
+ans.time = 0
+ans.profit = 0
+
+for (i in 1:length(r)){
+  sol = obj(r[i])
+  ans.time[i] = sol[1]
+  ans.profit[i] = sol[2]
+}
+
+result = data.frame(rate=r, time=ans.time,profit = ans.profit)
+print(result)
+```
+
