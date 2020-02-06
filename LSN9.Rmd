@@ -1,0 +1,154 @@
+---
+title: "LSN09"
+author: "Bonnie Romeo"
+
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+library(MASS)
+library(NlcOptim)
+```
+
+Problem 1 (Equality Constraints)
+maxx1,x2x1(600−3x1+x2)+x2(800−2x2+x1) 
+s.t. 12x1+5x2=2500 
+
+```{r}
+obj = function(x){((600-3*x[1]+x[2])*x[1]+(800-2*x[2]+x[1])*x[2])*-1}
+Aeq = matrix(c(12, 5), nrow =1, byrow = TRUE)
+Beq = matrix(c(2500), nrow = 1, byrow = TRUE)
+
+x0 = c(0,500)
+ans = solnl(x0, obj = obj, Aeq = Aeq, Beq = Beq)
+
+print(ans$par)
+```
+
+```{r}
+f = function(x){x[1]^2+x[2]^2}
+Aeq = matrix(c(1,2),nrow=1)
+Beq = matrix(5)
+x0=c(5,0)
+ans = solnl(x0,f,Aeq=Aeq,Beq=Beq)
+print(ans)
+```
+
+
+Problem 2 (Inequality Constraints)
+maxx1,x2x1(600−3x1+x2)+x2(800−2x2+x1) 
+s.t. 12x1+5x2≤2500 
+x1≥0 
+x2≥0 
+
+```{r}
+
+A = matrix(c(12, 5, -1, 0, 0, -1), nrow = 3, byrow = TRUE)
+B = matrix(c(2500, 0, 0), nrow = 3)
+
+obj = function(x){((600-3*x[1]+x[2])*x[1]+(800-2*x[2]+x[1])*x[2])*-1}
+X = list(x=seq(0,500),y=seq(0,500))
+ans = solnl(x0,objfun = obj,A=A,B=B)
+print(ans$par)
+```
+
+
+Problem 3: Explain why did prob1,2 give the same solution and we got different answers in the two sections above?
+
+They gave the same solution because it looks to maximize, thus, typically would be nonnegative anyways. 
+
+Problem 4: Create a contour plot with constraints for problems 1,2.
+
+```{r}
+obj = function(x){((600-3*x[1]+x[2])*x[1]+(800-2*x[2]+x[1])*x[2])*(-1)}
+X = list(x=seq(0,500),y=seq(0,500))
+Z = Outer(obj,X)
+contour(X$x,X$y,-Z)
+
+```
+
+
+Problem 5
+maxx,yx(10+22x−0.5+1.3y−0.1)−18x+y(5+15y−0.5+0.8x−0.08)−10y 
+
+```{r}
+f=function(x){((10+22*x[1]^(-0.5)+1.3*x[2]^(-0.1))-18*x[1]+x[2]*(5+15*x[2]^(-0.5)+0.8*x[1]^(-0.08))-10*x[2])*(-1)}
+
+#I am not sure if I types obj wrong, as I was getting an error message when I tried to optim. 
+x = c(100,100)
+ans = optim(x,f)
+print(ans)
+```
+
+Problem 6 - Find the solution and plot the contour of the objective unction, the constraints and the solution.
+maxx,yx(10+22x−0.5+1.3y−0.1)−18x+y(5+15y−0.5+0.8x−0.08)−10y 
+s.t. 2x+3y≤18 
+x≥3 
+y≥2 
+
+```{r}
+obj=function(x){((10+22*x[1]^(-0.5)+1.3*x[2]^(-0.1))-18*x[1]+x[2]*(5+15*x[2]^(-0.5)+0.8*x[1]^(-0.08))-10*x[2])*(-1)}
+X = list(x=seq(0,500),y=seq(0,500))
+Z = Outer(obj,X)
+contour(X$x,X$y,-Z)
+#This graph does not look right 
+```
+
+```{r,eval = FALSE}
+obj= function(x){((10+22*x[1]^(-0.5)+1.3*x[2]^(-0.1))-18*x[1]+x[2]*(5+15*x[2]^(-0.5)+0.8*x[1]^(-0.08))-10*x[2])*(-1)}
+A = matrix(c(2,3,-1,0,0,-1), nrow =3, byrow = TRUE)
+B = matrix(c(18,3,2), nrow = 3)
+
+X = list(x=seq(0,500),y=seq(0,500))
+x0 = c(100,100)
+#Getting an error here 
+ans = solnl(x0,obj = obj,A=A,B=B)
+print(ans$par)
+```
+
+
+Problem 7 - Find the solution and plot the contour of the objective unction, the constraints and the solution.
+maxx,yx(10+22x−0.5+1.3y−0.1)−18x+y(5+15y−0.5+0.8x−0.08)−10y 
+s.t. 50x+100y≥600 
+x≤7 
+y≤5 
+
+NOTE: My solnl is not running/updating my ans. I belive it is printing out the previous ans input that it recieved. 
+```{r}
+obj=function(x){((10+22*x[1]^(-0.5)+1.3*x[2]^(-0.1))-18*x[1]+x[2]*(5+15*x[2]^(-0.5)+0.8*x[1]^(-0.08))-10*x[2])*(-1)}
+A = matrix(c(50,100,1,0,0,1),nrow=3,byrow=T)
+B = matrix(c(600,5,7),nrow=3)
+print(A)
+print(B)
+```
+
+```{r}
+X = list(x=seq(0,500),y=seq(0,500))
+Z = Outer(obj,X)
+contour(X$x,X$y,Z)
+```
+
+```{r, eval = FALSE}
+ans = solnl(X, obj = obj,A=A,B=B)
+print(ans)
+```
+
+
+Problem 8 - Find the solution (you will need to define A,B, Aeq, and Beq for this one).
+maxx,yx(10+22x−0.5+1.3y−0.1)−18x+y(5+15y−0.5+0.8x−0.08)−10y 
+s.t. 2x+3y+s1=18 
+−x+s2=3 
+−y+s3=2 
+s1≥0 
+s2≥0 
+s3≥0
+
+```{r}
+obj=function(x){((10+22*x[1]^(-0.5)+1.3*x[2]^(-0.1))-18*x[1]+x[2]*(5+15*x[2]^(-0.5)+0.8*x[1]^(-0.08))-10*x[2])*(-1)}
+Aeq = matrix(c(2,3,1,-1,0,0,1,0,-1,0,0,1), nrow = 3, byrow = TRUE)
+Beq = matrix(c(18,3,2), nrow = 3, byrow = TRUE)
+A = matrix(c(1,0,0,0,1,0,0,0,1), nrow = 3, byrow = TRUE)
+B = matrix(c(0,0,0), nrow = 3, byrow = TRUE)
+```
+
