@@ -1,0 +1,29 @@
+---
+title: "Bisection Code"
+author: "Bonnie Romeo"
+date: "2/4/2020"
+output: word_document
+---
+
+```{r}
+bisection = function(f,a,b,tol=0.0001){
+  if (f(a)*f(b) > 0){
+    return ("Boundary Conditions Not Met")
+  }
+  else{
+    middle = a
+    while (abs(f(middle))>tol){
+      middle = (a+b)/2
+      if (f(middle)*f(a)>0) (a = middle)
+      else (b = middle)
+      x=middle
+      y=f(middle)
+      ## if you want to "see" what happens at every step, take off the # of the next line ##
+      #cat(sprintf("x-Val: %.4f ; f(x-val): %.4f\n",x,y))
+    }
+    return (middle)
+  }
+}
+
+```
+

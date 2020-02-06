@@ -1,0 +1,19 @@
+---
+title: "Newtons Code"
+author: "Bonnie Romeo"
+date: "2/4/2020"
+output: word_document
+---
+
+```{r}
+newton = function(f,x0, eps = 0.0001){
+  xn = x0
+  n = 1
+  while(abs(f(xn))>eps & n < 1000){
+    xn = xn-f(xn)/fprime(f,xn) 
+    n = n + 1
+  }
+  return(xn)
+}
+```
+

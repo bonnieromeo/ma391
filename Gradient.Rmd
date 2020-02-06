@@ -1,0 +1,22 @@
+---
+title: "Gradient Code"
+author: "Bonnie Romeo"
+date: "2/4/2020"
+output: word_document
+---
+
+```{r}
+grad = function(f,x,h=0.01){
+  n = length(x)
+  delF = array(0,dim=c(n,1))
+  for (i in 1:n){
+    xhp = xhm = x
+    
+    xhp[i]=xhp[i]+h
+    xhm[i]=xhm[i]-h
+    delF[i] = (f(xhp)-f(xhm))/(2*h)
+  }
+  return (delF)
+}
+```
+

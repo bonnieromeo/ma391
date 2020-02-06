@@ -1,0 +1,210 @@
+---
+title: 'Chapter 2 # 1'
+author: "Bonnie Romeo"
+date: "2/5/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+```
+
+A) 
+
+```{r}
+Blue = function(x){(0.05*x[1]*(1-x[1]/150000)-1/100000000*x[1]*x[2])}
+
+Fin = function(x){(0.08*x[2]*(1-x[2]/400000)-1/100000000*x[1]*x[2])}
+
+obj = function(x){((0.08*x[2]*(1-x[2]/400000)-1/100000000*x[1]*x[2])+(0.05*x[1]*(1-x[1]/150000)-1/100000000*x[1]*x[2]))*(-1)}
+
+x = c(50000,50000)
+
+ans = optim(x,obj, method = "L-BFGS-B") #Box conditions to increase the tol.
+print(ans$par)
+print(ans$value)
+#Optimal Answers for # of Whales
+Blue(ans$par)
+Fin(ans$par)
+```
+
+B)
+BLUE
+```{r}
+R2 = function (r2){
+  fr2 = function(x){
+    ((0.05*x[1]*(1-x[1]/150000)-1/100000000*x[1]*x[2]) + (r2*x[2]*(1-x[2]/400000)-1/100000000*x[1]*x[2]))*(-1)
+  }
+  x = c(50000, 50000)
+  ans = optim(x,fr2, method = "L-BFGS-B")
+  return(ans)
+}
+
+R2(0.08)
+
+ans.x1 = 0 
+ans.x2 = 0 
+ans.rev = 0 
+
+r = seq(0.04, 0.12, 0.01)
+print(r) #Make sure the step is correct
+
+#FOR Loop
+
+for( i in 1:length(r)){
+  ans = R2(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i] = ans$par[2]
+  ans.rev[i] = -1*(ans$value)
+}
+result = data.frame(growth_rate = r, x1 = ans.x1, x2 = ans.x2, revenue = ans.rev)
+print(result)
+
+
+```
+FIN
+```{r}
+R2 = function (r2){
+  fr2 = function(x){
+    ((r2*x[1]*(1-x[1]/150000)-1/100000000*x[1]*x[2]) + (0.08*x[2]*(1-x[2]/400000)-1/100000000*x[1]*x[2]))*(-1)
+  }
+  x = c(50000, 50000)
+  ans = optim(x,fr2, method = "L-BFGS-B")
+  return(ans)
+}
+
+R2(0.05)
+
+ans.x1 = 0 
+ans.x2 = 0 
+ans.rev = 0 
+
+r = seq(0.04, 0.12, 0.01)
+print(r) #Make sure the step is correct
+
+#FOR Loop
+
+for( i in 1:length(r)){
+  ans = R2(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i] = ans$par[2]
+  ans.rev[i] = -1*(ans$value)
+}
+result = data.frame(growth_rate = r, x1 = ans.x1, x2 = ans.x2, revenue = ans.rev)
+print(result)
+```
+
+C)
+
+```{r, include = FALSE}
+#For Reference
+Blue = function(x){(0.05*x[1]*(1-x[1]/150000)-1/100000000*x[1]*x[2])}
+
+Fin = function(x){(0.08*x[2]*(1-x[2]/400000)-1/100000000*x[1]*x[2])}
+```
+
+BLUE
+```{r}
+R2 = function (r2){
+  fr2 = function(x){
+    ((0.05*x[1]*(1-x[1]/r2)-1/100000000*x[1]*x[2]) + (0.08*x[2]*(1-x[2]/400000)-1/100000000*x[1]*x[2]))*(-1)
+  }
+  x = c(50000, 50000)
+  ans = optim(x,fr2, method = "L-BFGS-B")
+  return(ans)
+}
+
+R2(150000)
+
+ans.x1 = 0 
+ans.x2 = 0 
+ans.rev = 0 
+
+r = seq(125000, 175000, 10000)
+print(r) #Make sure the step is correct
+
+#FOR Loop
+
+for( i in 1:length(r)){
+  ans = R2(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i] = ans$par[2]
+  ans.rev[i] = -1*(ans$value)
+}
+result = data.frame(growth_rate = r, x1 = ans.x1, x2 = ans.x2, revenue = ans.rev)
+print(result)
+```
+
+FIN
+```{r}
+R2 = function (r2){
+  fr2 = function(x){
+    ((0.05*x[1]*(1-x[1]/150000)-1/100000000*x[1]*x[2]) + (0.08*x[2]*(1-x[2]/r2)-1/100000000*x[1]*x[2]))*(-1)
+  }
+  x = c(50000, 50000)
+  ans = optim(x,fr2, method = "L-BFGS-B")
+  return(ans)
+}
+
+R2(400000)
+
+ans.x1 = 0 
+ans.x2 = 0 
+ans.rev = 0 
+
+r = seq(350000, 450000, 20000)
+print(r) #Make sure the step is correct
+
+#FOR Loop
+
+for( i in 1:length(r)){
+  ans = R2(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i] = ans$par[2]
+  ans.rev[i] = -1*(ans$value)
+}
+result = data.frame(growth_rate = r, x1 = ans.x1, x2 = ans.x2, revenue = ans.rev)
+print(result)
+```
+D)
+
+```{r}
+R2 = function (r2){
+  fr2 = function(x){
+    ((0.05*x[1]*(1-x[1]/150000)-1/r2*x[1]*x[2]) + (0.08*x[2]*(1-x[2]/400000)-1/r2*x[1]*x[2]))*(-1)
+  }
+  x = c(50000, 50000)
+  ans = optim(x,fr2, method = "L-BFGS-B")
+  return(ans)
+}
+
+R2(100000000)
+
+ans.x1 = 0 
+ans.x2 = 0 
+ans.rev = 0 
+
+r = seq(90000000, 110000000, 10000000)
+print(r) #Make sure the step is correct
+
+#FOR Loop
+
+for( i in 1:length(r)){
+  ans = R2(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i] = ans$par[2]
+  ans.rev[i] = -1*(ans$value)
+}
+result = data.frame(growth_rate = r, x1 = ans.x1, x2 = ans.x2, revenue = ans.rev)
+print(result)
+
+```
+```{r, eval = FALSE}
+#This attempts to graph this function, in order to see at what point the competition parameter would make a specific whale population go to zero. 
+
+plot(r,ans.x1,xlim=c(0,100000000),ylim=c(0,1000000000))
+lines(r,ans.x2,col="red")
+legend("topleft",legend=c("x1","x2"),lty=1,col=c("blue","red"))
+grid(lwd=2, nx=4, ny=10)
+```
+
