@@ -1,0 +1,81 @@
+---
+title: 'Chapter 1 #4'
+author: "Bonnie Romeo"
+output: word_document
+---
+
+```{r, include = FALSE}
+library(ma391romeo)
+newton = function(f,x0, eps = 0.0001){
+  xn = x0
+  n = 1
+  while(abs(f(xn))>eps & n < 1000){
+    xn = xn-f(xn)/fprime(f,xn) 
+    n = n + 1
+  }
+  return(xn)
+}
+```
+
+A)
+
+```{r}
+r = 5/7
+cost = function(x){500*(200/(r*(x+1)))+(18000+800*200/(r*(x+1)))*x+(200/(r*(x+1))>14)*(10000*(200/(r*(x+1))-14))}
+df = function(x){fprime(cost,x)}
+#2 Different Methods to get the Same answer 
+bisection(df, 0, 30)
+
+```
+
+B)
+
+```{r}
+
+cost = function(r){
+  f = function(x){500*(200/(r*(x+1)))+(18000+800*200/(r*(x+1)))*x+(200/(r*(x+1))>14)*(10000*(200/(r*(x+1))-14))}
+  dF = function(x){fprime(f,x)}
+  ans = newton(dF,7)
+  return(c(ans,f(ans)))
+}
+r = seq(1/7,12/7,1/7)
+ans.crews = 0
+ans.cost = 0
+cost(14/7)
+
+for (i in 1:length(r)){
+  sol = cost(r[i])
+  ans.crews[i] = sol[1]
+  ans.cost[i] = sol[2]
+}
+
+result = data.frame(crews=ans.crews,cost = ans.cost)
+print(result)
+```
+
+C) 
+
+```{r, eval = FALSE}
+
+cost = function(r){
+  f = function(x){500*(280/(x[1]+1)+ 18000 +800*(280/(X[1]+1))*x[1]*x[1]+X[2]*(280)/x[1]+1)-14}
+  dF = function(x){fprime(f,x)}
+  ans = newton(dF,7)
+  return(c(ans,f(ans)))
+}
+r = seq(1/7,12/7,1/7)
+ans.time = 0
+ans.cost = 0
+
+for (i in 1:length(r)){
+  sol =f(r[i])
+  ans.time[i] = sol[1]
+  ans.cost[i] = sol[2]
+}
+
+result = data.frame(time=ans.time,cost = ans.cost)
+print(result)
+```
+This code does not work, thus not run. 
+
+

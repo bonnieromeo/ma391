@@ -1,0 +1,76 @@
+---
+title: 'Chapter 1 #2'
+author: "Bonnie Romeo"
+date: "2/4/2020"
+output: word_document
+---
+
+```{r, include = FALSE}
+library(ma391romeo)
+```
+
+```{r}
+#Sensitivity of Feed Cost of Pig
+feed = seq(0.3,0.6,0.05)
+pr = array(0,length(feed))
+ans = array(0,length(feed))
+for (i in 1:length(feed)){
+    profit = function (x){
+      return((0.65-0.01*x)*(200+5*x)-feed[i]*x) #The same function as before
+    }
+    dProfit = function(x){fprime(profit,x,)}
+    ans[i] = bisection(dProfit,-100,50,0.0001)
+    pr[i] = profit(round(ans[i]))
+}
+result = data.frame(ans = ans, pr = pr)
+print(result)
+
+```
+
+```{r}
+# $0.60/day is the new cost & growth rate = 7 lbs/day / assume 132.8 was previous profit
+profit = function (x){
+  return((0.65-0.01*x)*(200+7*x)-0.6*x)
+}
+x = seq(0,20,1)
+plot(x,profit(x),type="o",xlab="x(days)")
+dProfit = function(x){fprime(profit,x)}
+ans=bisection(dProfit,0,20)
+print(ans)
+profit(round(ans))
+```
+
+```{r}
+#Growth rate of the pig 
+g = seq(5,7,0.05)
+pr = array(0,length(g))
+ans = array(0,length(g))
+for (i in 1:length(g)){
+    profit = function (x){
+      return((0.65-0.01*x)*(200+g[i]*x)-.6*x)
+    }
+    dProfit = function(x){fprime(profit,x,)}
+    ans[i] = bisection(dProfit,-100,50,0.0001)
+    pr[i] = profit(round(ans[i]))
+}
+result = data.frame(ans = ans, pr = pr)
+print(result)
+```
+
+```{r}
+## Take a closer look at the growth rate and profit to find when the new feed is no longer better
+g = seq(5.25,5.28,0.01)
+pr = array(0,length(g))
+ans = array(0,length(g))
+for (i in 1:length(g)){
+    profit = function (x){
+      return((0.65-0.01*x)*(200+g[i]*x)-.6*x)
+    }
+    dProfit = function(x){fprime(profit,x,)}
+    ans[i] = bisection(dProfit,-100,50,0.0001)
+    pr[i] = profit(round(ans[i]))
+}
+result = data.frame(growthRate = g,daysToSell=ans,profit=pr,better=pr>133.2)
+print(result)
+```
+
