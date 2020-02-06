@@ -1,0 +1,63 @@
+---
+title: 'Chapter 1 #6'
+author: "Bonnie Romeo"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+```
+A)
+
+```{r, eval = FALSE}
+x = c(70000)
+fin = function(x){(0.08*x*(1-(x/400000)))-(0.00001*E*x)} 
+
+dfin = function(x){fprime(fW,x)}
+
+print(fin(3921.5))
+
+print(fin(3922))
+```
+
+B)
+
+```{r}
+rate = seq(0.03,0.14,0.01)
+pop = 0
+effort = 0
+for (i in 1:length(rate)){
+  K = 400000
+  obj = function(x){
+    return (rate[i]*x*(1-x/K)*-1)
+  }
+  dobj = function(x){fprime(obj,x)}
+  pop[i] = bisection(dobj,0,1000000000) #200000
+  print(pop[i])
+  HR=obj(pop[i])
+  effort[i] = HR/(pop[i]*0.0001)
+}
+results = data.frame(rate = rate, pop = pop, effort = effort)
+print(results)
+```
+
+C)
+```{r, error = FALSE}
+K = seq(100000,300000,10000)
+population = 0
+effort = 0
+for (i in 1:length(K)){
+  r = 0.08
+  obj = function(x){
+    return (r*x*(1-x/K[i])*-1)
+  }
+  dobj = function(x){fprime(obj,x)}
+  pop[i] = bisection(dobj,0,1000000000) #200000
+  print(pop[i])
+  HR=obj(pop[i])
+  effort[i] = HR/(pop[i]*0.0001)
+}
+results = data.frame(K = K, pop = pop, effort = effort)
+print(results)
+```
+
