@@ -1,0 +1,67 @@
+---
+title: '#8'
+author: "Bonnie Romeo"
+date: "1/20/2020"
+output: word_document
+---
+
+```{r, include = FALSE}
+## Necessary Code
+fprime = function (f,a,h=0.0001){(f(a+h)-f(a-h))/(2*h)}
+
+
+bisection = function(f,a,b,tol=0.0001){
+  if (f(a)*f(b) > 0){
+    return ("Boundary Conditions Not Met")
+  }
+  else{
+    middle = a
+    while (abs(f(middle))>tol){
+      middle = (a+b)/2
+      if (f(middle)*f(a)>0) (a = middle)
+      else (b = middle)
+      x=middle
+      y=f(middle)
+      ## if you want to "see" what happens at every step, take off the # of the next line ##
+      #cat(sprintf("x-Val: %.4f ; f(x-val): %.4f\n",x,y))
+    }
+    return (middle)
+  }
+}
+
+newton = function(f,x0, eps = 0.0001){
+  xn = x0
+  n = 1
+  while(abs(f(xn))>eps & n < 1000){
+    xn = xn-f(xn)/fprime(f,xn) 
+    n = n + 1
+  }
+  return(xn)
+}
+```
+
+## Problem 8 
+# A Find the best... 
+```{r}
+p = function(t) {(0.65-0.01*t)*((5*t-t^2/60)+200)-0.45*t}
+dP = function(t){fprime(p,t)}
+ans = newton(dP,5)
+print(ans)
+print(p(ans))
+```
+# B Sensitivity Analysis 
+```{r}
+months = seq(1,10)
+ans.time = 0 
+ans.profit = 0
+for ( i in 1:length(months)){
+  m = months[i]
+  p = function(t) {(0.65-0.01*t)*(((5/m)*(m*t-t^2/60)+200))-0.45*t}
+  dP = function(t){fprime(p,t)}
+  ans.time[i] = newton(dP, 6)
+  ans.profit[i] = p(ans.time[i])
+}
+
+result = data.frame(months = months, days = ans.time, profit = ans.profit)
+print(result)
+```
