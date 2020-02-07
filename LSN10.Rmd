@@ -1,0 +1,90 @@
+---
+title: "HW LSN10"
+author: "Bonnie Romeo"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+library(MASS)
+library(NlcOptim)
+```
+
+Problem 1: Using this new constraint from example 2.5, use R to show how changing the rhs of the constraints changes the objective function.
+
+maxx1,x2(339−0.01x1−0.003x2)x1+(339−0.004x1−0.01x2)x2−(400000+195x1+225x2) 
+s.t. x1+x2≤10,001 (production capacity) 
+x1≤3,001 (max 19in TVs) 
+x2≤8,001 (max 21in TVs) 
+
+```{r}
+obj = function(x){((339-0.01*x[1]-0.003*x[2])*x[1]+(339-0.004*x[1]-0.01*x[2])*x[2]-(400000+195*x[1]+225*x[2]))*(-1)}
+```
+
+```{r}
+Aeq = matrix(c(1,1,1,0,0,1), nrow =3, byrow = TRUE)
+Beq = matrix(c(10001,3001,8001), nrow = 3, byrow = TRUE)
+Aeq
+
+x0 = c(0,10000)
+#ans = solnl(x0, obj = obj, Aeq = Aeq, Beq = Beq)
+#print(ans)
+```
+
+Problem2: Explain why the solution that you got in R either confirmed what you thought was going to happen and why; or did not confirm and possible reasons why.
+
+
+
+Problem3: Go back to the originial problem and create a table of rhs for the  x1+x2=10000  constraint - keep track of  x1,x2,λconstraint,profit . Make a reasonable window of possible rhs's for this constraint and explain what happens. Does shadow price stay at 24? If not, explain why.
+
+?
+
+```{r}
+R2 = function (r2){
+  fr2 = function(x){
+    ((339-0.01*x[1]-0.003*x[2])*x[1]+(339-0.004*x[1]-0.01*x[2])*x[2]-(400000+195*x[1]+225*x[2]))*(-1)
+  }
+  x = c(50000, 50000)
+  ans = optim(x,fr2, method = "L-BFGS-B")
+  return(ans)
+}
+
+ans.x1 = 0 
+ans.x2 = 0 
+ans.rev = 0 
+
+r = seq(0.04, 0.12, 0.01)
+print(r)
+```
+
+
+```{r}
+#FOR Loop
+
+for( i in 1:length(r)){
+  ans = R2(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i] = ans$par[2]
+  ans.rev[i] = -1*(ans$value)
+}
+result = data.frame(growth_rate = r, max19inTV = ans.x1, max21inTV = ans.x2, profit = ans.rev)
+print(result)
+```
+
+Problem 4: Create your own optimization problem with a constraint. Find its shadow prices (implies that you need at least one constraint to be binding) and verify that an increase in the constraint (by 1) actually increases the objective function by the shadow price.
+
+Profit:
+Apples = $5/box
+Oranges = $7/box
+Bananas = $3/box
+Cost to produce:
+Apples = $3.5/box
+Oranges = $3.7/box
+Bananas = $1.3/box
+Goal: Max Profit
+
+Objective Funtion: ((5*x[1]+7*x[2]+3*x[3])-(3.5*x[1]+3.7*x[2]+1.3*x[3]))(-1)
+
+Constraint: Must sell at least $43 worth of apples
+
+
