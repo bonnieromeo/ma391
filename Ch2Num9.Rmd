@@ -1,0 +1,31 @@
+---
+title: 'Ch2 #9'
+author: "Bonnie Romeo"
+date: "2/6/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+library(lpSolve)
+library(MASS)
+library(NlcOptim)
+```
+
+```{r, eval = FALSE}
+obj= function(x){((250+100*x[1])*(350-50*x[1])+(1.5+0.1*x[2])*(80000-5000*x[2]-1000*x[1]))*-1}
+
+con = function(x){
+  f=NULL
+  f=rbind(f,(80000*(1-x[1]))-80000)
+  f=rbind(f,((80000*(1-x[1]))+(30000*(1+.02*x[2]))+110000))
+  f=rbind(f,((30000*(1+.02*x[2]))-50000))
+      
+  return(list(ceq=f,c=NULL))
+}
+
+x0=c(7000,60000)
+solnl(x0,objfun=obj,confun=con)
+
+```
+
