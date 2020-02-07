@@ -1,0 +1,68 @@
+---
+title: 'Chapter 2 #7'
+author: "Bonnie Romeo"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+```
+
+A)
+
+```{r}
+obj= function(x){((250+100*x[1])*(350-50*x[1])+(1.5+0.1*x[2])*(80000-5000*x[2]-1000*x[1]))*-1}
+
+x = c(500,500)
+ans = optim(x,obj,method="L-BFGS-B")
+print(ans)
+
+```
+
+B)
+```{r}
+
+obj = function(r){
+  r2 = function(x){((250+100*x[1])*(350-50*x[1])+(1.5+0.1*x[2])*(80000-r*x[2]-1000*x[1]))*-1}
+  x = c(50000,50000)
+  ans=optim(x,r2,method="L-BFGS-B")
+}
+
+r = seq(4900,5100,50)
+ans.x1=0
+ans.x2=0
+ans.rev=0
+for (i in 1:length(r)){
+  ans = obj(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i]= ans$par[2]
+  ans.rev[i]=-ans$value
+}
+
+result = data.frame(sub=r,ad=ans.x1,paper=ans.x2,profit=ans.rev)
+print(result)
+```
+
+C)
+
+```{r}
+obj = function(r){
+  r2 = function(x){((250+100*x[1])*(r-50*x[1])+(1.5+0.1*x[2])*(80000-5000*x[2]-1000*x[1]))*-1}
+  x = c(50000,50000)
+  ans=optim(x,r2,method="L-BFGS-B")
+}
+
+r = seq(250,450,50)
+ans.x1=0
+ans.x2=0
+ans.rev=0
+for (i in 1:length(r)){
+  ans = obj(r[i])
+  ans.x1[i] = ans$par[1]
+  ans.x2[i]= ans$par[2]
+  ans.rev[i]=-ans$value
+}
+
+result = data.frame(sub=r,ad=ans.x1,paper=ans.x2,profit=ans.rev)
+print(result)
+```
