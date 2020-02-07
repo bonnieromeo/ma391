@@ -1,0 +1,66 @@
+---
+title: 'Chapter 1 #6'
+author: "Bonnie Romeo"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+```
+
+A)
+
+```{r}
+r = 0.08
+K = 400000
+obj = function(x){return (r*x*(1-x/K))
+}
+dobj = function(x){fprime(obj,x)}
+p = bisection(dobj,0,1000000000)
+print(p) #Population 
+HR = obj(p) # Growth Rate
+print(HR)
+
+ans = (HR*(1/(p*0.00001)))
+print(ans)
+```
+
+B)
+
+```{r}
+#Typed out all of the variables to make the SA 
+P=function(x){6000*(0.0001*((0.08*(1-(x/400000)))/0.00001)*x)-500*((0.08*(1-(x/400000)))/0.00001)}
+
+p = seq(485,515,2)
+ans = array(0,length(p))
+for (i in 1:length(p)){
+  P = function (x){
+    return(6000*(0.0001*((0.08*(1-(x/400000)))/0.00001)*x)-p[i]*((0.08*(1-(x/400000)))/0.00001))
+  }
+  dP = function(x){fprime(P,x)}
+  ans[i] = bisection(dP,190000,220000,0.0001)
+}
+result = data.frame(p,ans)
+print(result)
+```
+
+
+C)
+
+```{r}
+P=function(x){6000*(0.0001*((0.08*(1-(x/400000)))/0.00001)*x)-500*((0.08*(1-(x/400000)))/0.00001)}
+
+p = seq(5500,6500,75)
+ans = array(0,length(p))
+for (i in 1:length(p)){
+  P = function (x){
+    return(p[i]*(0.0001*((0.08*(1-(x/400000)))/0.00001)*x)-500*((0.08*(1-(x/400000)))/0.00001))
+  }
+  dP = function(x){fprime(P,x)}
+  ans[i] = bisection(dP,190000,220000,0.0001)
+}
+result = data.frame(p,ans)
+print(result)
+```
+
+
