@@ -1,0 +1,56 @@
+---
+title: 'Chapter 2 #6'
+author: "Bonnie Romeo"
+
+
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(ma391romeo)
+library(MASS)
+library(NlcOptim)
+```
+
+A)
+
+```{r, warning=FALSE, error = FALSE}
+P = function(x){return((10000+(950-x[1])*((0.5)/100)*10000)+(x[2]-5000*(200/10000))*(-1))}
+```
+
+This is not evaluated as it ran, but when tried to knit, would tell me there is an as.vector error
+```{r, eval = FALSE}
+x=c(2,400)
+dP = function(x){fprime(P,x)}
+dP
+
+dP(x)
+
+###Linear Inequality Constraints##
+x0=c(1000,1000)
+Aeq = matrix(c(1,0,0,1),nrow=2) 
+Beq = matrix(c(0,10000),nrow=2)
+print(Aeq)
+print(Beq)
+ans=solnl(x0,objfun=P,A=A,B=B)
+print(ans$lambda)
+```
+
+```{r}
+obj=function(x){((10000*(1+0.5*x[1]))+200*x[2])*(950-100*x[1])-(700*(10000*(1+0.5*x[1])+200*x[2]))-(50000-10000*x[2])*-1}
+
+con=function(x){
+  f=NULL
+  f=rbind(f,-50000-10000*x[1])
+  return(list(ceq=f,c=NULL))
+}
+x0=c(1,1)
+ans=solnl(x0,obj=obj,con=con)
+```
+I tried two ways as I was unable to get an answer that i was pleased with
+
+B) If I were to do this problem I would change the price elasticity by changing the 0.5 value to a variable. I would then conduct sensitivity analysis which runs through the different prices when it varies from 25% to 75%. 
+
+C)If I were to do this problem i would replace the (200/10000)  with an R variable, first on each individual aspect and then on the whole number to see the different results/ 
+
+
