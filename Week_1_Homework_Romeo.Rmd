@@ -1,0 +1,303 @@
+---
+title: "Week 1 Homework"
+author: "Bonnie Romeo"
+date: "3/26/2020"
+output: word_document
+---
+
+LSN 24/25 Ch. 7 # 5, 6, 11 
+
+5. Reconsider the house fire problem of Example 7.4. In this exercise we will investigate the problem of estimating the rate, lambda, at which emergency calls occur. 
+
+a) Suppose that 2050 emergency calls are received in a one-year period. Estimate the rate, lambda, of house fires per month. 
+
+Variables: 
+
+\item lambda = Rate of house fires reports (per month)
+\item n = Number of calls (2050)
+
+Assumptions: 
+
+\item House fires occur a random with rate lambda; x[1] and x[2] are independent and each x[n] has an exponential distribution with rate parameter, lambda. 
+
+Objective:
+
+\item Determine the lambda per one year given there are 2050 emergency calls in that time period. 
+
+```{r}
+n = 2050
+t = 12
+n/t
+```
+
+Answer: There are approximate 171 calls per month. 
+
+b) Assuming that the true value of lambda is 171 calls per month, calculate the range of normal variation for the number of emergency calls received in one year. 
+
+Assumption: lambda = 171 calls/month 
+
+```{r}
+
+171*t # @ 12 = 2052
+
+2052+117
+2052-117
+
+```
+
+The range of calls, x, in a given year is represented by: (2169 <= x <= 1935)
+
+c) Calculate the range of lambda for which 2050 calls in one year is within the range of normal variation. How accurate is our estimate of the true rate, lambda, at which house fires occur? 
+
+Given Equation 7.24 in the book, it can be simplified to:
+
+12 * l - (2050)^2 <= 4*(2050)
+
+```{r, eval = F}
+4*2050
+
+sqrt(8200)
+
+90.55383+2050
+
+2140.554/2
+
+2050-1070
+```
+
+n = 980 The range is 2050 +/- 980. 
+
+The lambda is not very accurate. 
+
+d) How many years of data would be required to obtain an estimate of, lamba, accurate to the nearest integer (an error of +/- 0.5)?
+
+This equation is derived from 7.24:
+
+```{r}
+# lambda = 171 = t/12*lambda
+# n = 171*12*lambda
+# -2*sqrt(n)/(12*lambda) <= 0.5
+
+0.5/2
+
+0.25^2
+
+# 171/12*lambda = 0.0625
+
+# 0.0625*12*lambda = 171
+
+171/0.0625
+
+2736/12
+```
+ You need 228 Years of Data to get an estimate of lambda. 
+
+6. Reconsider the house problem of Example 7.4. The underlying random process is called a Poisson process because it can be shown that the number of arrivals (calls) N[t] during a time interval of length, t, has a Poisson distribution. Specifically, 
+
+Pr{N[t]=n}=(exp(-l*t)*(l*t)^n)/(n!)
+
+for all n = 0, 1, 2, ... where l = lambda
+
+a) Show that E*N[t] = lambda*t 
+
+This exponential function can be explained by using the Taylor Series. 
+
+E*N[t] = sum(n*Pr{N[t] = n}, n = 0, infinity )
+
+E*N[t]= sum(n*e^(-lambda*t)*(lambda*t)^(n)/N!, n = 0, infinity)
+      
+E*N[t] = exp(-lambda*t)*(lambda*t) sum((lambda*t)^(n-1)/(n-1), n = 0, infinity)
+      
+E*N[t] = exp(-lambda*t)*(lambda*t)*exp(lambda*t) = lambda*t
+
+Show that V*N[t] = l*t
+
+V*N[t] = sum((n-lambda*t)^2*Pr{N[t]=n}, n = 0, infinity )
+
+V*N[t] = sum(n^2-2*n*lambda*t+(lambda*t)^2)*Pr{N[t] = n}, n = 0, infinity)
+
+V*N[t] = sum(n*(n-1)+n-2*n*lambda*t+(lambda*t)^2)*exp(-lambda*t)*(lambda*t)^n/n!, n = 0, infinity)
+
+This Equation can be expanded and broken down into multiple summations, yielding...
+
+V*N[t] = (lambda*t)^2 + (lambda*t) - 2*(lambda*t)^2 + (lambda*t)^2 = lambda*t
+
+b) Use the Poisson distribution to calculate the probability that the number of calls received in a given month deviates from the mean of 171 by as much as 18 calls. 
+
+```{r}
+x = seq(153,189)
+dpois(x,171)
+sum(dpois(x, 171))
+```
+
+The probability that the calls deviate is 84.3%.
+
+c) Generalize the calculation of part (b) to determine the exact range of normal variation (at the 95% level) for the number of calls in a one-month period. 
+
+```{r}
+#normal = 20
+#normal = 21
+#normal = 22
+#normal = 23
+#normal = 24
+#normal = 25
+normal = 26
+
+x = seq(171-normal,171+normal)
+#dpois(x,171)
+sum(dpois(x, 171))
+
+171-26
+171+26
+```
+
+The exact range at a 95% interval is 145 - 197. 
+
+d) Compare the exact method used in part (c) with the approximate calculation of the range of normal variation that is included in the discussion of sensitivity analysis for Example 7.4 in the text. Which method would be more appropriate for determining the range of normal variation in the number of calls received in a single day? In a year? 
+
+The exact method in part (c) gives a more percise answer, however it is harder to compute. The centeral limit theorm gives a better approximation when the time period is larger, as in this example (171/30) = 5.7 whereas 171*12 = 2052. If we needs to determine the range of variation for a single day we would want to use the exact method. 
+
+11. A squadron of 16 bombers needs to penetrate air defenses to reach its target. They can either fly low and expose themselves to the air defense guns, or fly high and expose themselves to surface-to-air missiles. In either case, the air defense firing sequence proceeds in three stages. First, they must detect their target, then they must acquire the target (lock on the target), and finally they must hit the target. Each of these stages may or may not succeed. The probabilities are as follows. 
+
+AD Type   P[detect]   P[acquire]   P[hit]
+
+ Low        0.90         0.80        0.05
+ 
+ High       0.75         0.95        0.70
+
+The guns can fire 20 shells per minute, and the missile installation can fire three per minute. The proposed flight path will expose the planes for one minute of they fly low, and five minutes if they fly high. 
+
+a) Determine the optimal flight path (low or high). The objective is to maximize the number of bombers that survive to strike the target. 
+
+Assumptions:
+
+\item The bomber will fly low or high for the duration of the flight. 
+
+If all of the bombers fly low, then the probablity of a plane being hit is give by:
+
+```{r}
+(0.90)*(0.80)*(0.05)
+```
+
+If a plane is hit, we would loose 
+
+```{r}
+(0.036)*(15)
+```
+
+0.54 aircraft, which leaves us with 15 to continue and attack the target. 
+
+Doing the same methodology for flying high gives: 
+
+```{r}
+(0.75)*(0.95)*(0.70)
+(0.49875)*(16)
+```
+
+a lose of 7.98 aircraft. 
+
+Given this analysis, the optimal flight path is low. 
+
+b) Each individual bomber has a 70% chance to destroy the target. Use the results of part (a) to determine the chances of success (target destroyed) for this mission.
+
+```{r}
+p_sucuess = 0.70
+p_failure = 0.30
+
+number_bombers = 16
+
+p_failure^number_bombers
+
+```
+
+By taking the probability of failure (a target survives) and raising it to the power of the number of bombers, it gives the probability that a target survives all of the bombings. Our answer is very close to zero. Given probability rules, probabilities must sum to 1, we can subtract this result from 1 to determine the chance of sucuess: 
+
+```{r}
+1 - 4.304672e-09
+```
+
+The answer rounds to 1. This tells us that our mission will likley be 100% sucuessful. 
+
+c) Determine the minimum number of bombers necessary to guarantee a 95% chance of mission success
+
+```{r}
+1 - p_failure^1
+1 - p_failure^2
+1 - p_failure ^3
+1 - p_failure^4
+1 - p_failure^5
+```
+
+We want to send 3 bombers to guarentee a 95% mission sucuess rate. 
+
+d) Perform a sensitivity analysis with respect to the probability p = 0.7 that an individual bomber can destroy the target. Consider the number of bombers that must be sent to guarantee a 95% chance of mission success. 
+
+```{r}
+p = 1 - 0.7
+1 - p ^1
+1 - p ^2
+1 - p ^3 # ANSWER = 3 bombers
+
+p = 1 - 0.6
+1 - p ^1
+1 - p ^2
+1 - p ^3
+1 - p ^4 # ANSWER = 4 bombers
+
+p = 1 - 0.5
+1 - p ^1
+1 - p ^2
+1 - p ^3
+1 - p ^4
+1 - p ^6
+1 - p ^7 # ANSWER = 7 bombers
+
+p = 1 - 0.4 
+1 - p ^1
+1 - p ^2
+1 - p ^3
+1 - p ^4
+1 - p ^6
+1 - p ^7 #ANSWER = 7 bombers
+
+p = 1 - 0.3 # 0.7
+1 - p ^1
+1 - p ^2
+1 - p ^3
+1 - p ^4
+1 - p ^6
+1 - p ^7
+1 - p ^8
+1 - p ^9 #ANSWER = 9 bombers
+
+
+```
+
+
+
+e) Bad weather reduces both P[detect] and p, the probability that a bomber can destroy the target. If all of these probabilities are reduced in the same proportion, which side gains an advantage in bad weather?
+
+Given new probabilities, we can redo the calculations to give:
+
+```{r}
+#Probabilities reduced by 50% gives:
+
+p = (1 - p_failure^3)/2
+print(p)
+p_detect = 0.75/2
+print(p_detect)
+
+#Low flying Airplanes Lost
+
+(p_detect)*(.95)*(.7)
+0.249375*16
+
+#Probability of Sucuess
+p
+```
+
+A new loss of 3.99 low flying planes compared to 0.54 planes. 
+
+A new target destruction sucuess rate of 48% reduced from almost 100%. 
+
+This gives the target side the advantage in bad weather, as it makes them harder to take down and forces the bombers to use additional resources. 
