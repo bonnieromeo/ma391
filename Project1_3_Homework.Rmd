@@ -345,4 +345,4 @@ dds=function(w){
 }
 
 ```
-The conclusions in (c) a
+The conclusions in (c) hold to be true with the additional analysis. 
