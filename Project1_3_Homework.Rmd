@@ -1,0 +1,348 @@
+---
+title: 'Project #1: Problem #3: Homework'
+author: "Bonnie Romeo"
+date: "3/30/2020"
+output: word_document
+---
+ Chapter 4 #1: Reconsider the tree problem of Example 4.1. Assume that
+ 
+ r[2]/a[2] < r[1]/b[1] and r[1]/a[1] < r[2]/b[2]
+ 
+ so that the situation is as pictures in Fig. 4.2. 
+ 
+ a) Draw the vector field for this model 
+ 
+```{r}
+library(pracma)
+
+quiver <- function(x, y, u, v,
+                   scale = 0.05, angle = 10, length = 0.1, ...) {
+  stopifnot(is.numeric(x), is.numeric(y), is.numeric(u), is.numeric(v))
+
+  arrows(x, y, x+scale*u, y+scale*v, angle=10, length=length, ...)
+}
+
+VectorField = function(fun, xlim, ylim, n = 16,
+                       scale = 0.05, col = "darkblue",xlab = "xlim", ylab="ylim",
+                       main="",...) {
+  stopifnot(is.numeric(xlim), length(xlim) == 2,
+            is.numeric(ylim), length(ylim) == 2)
+
+  xpts = seq(xlim[1],xlim[2],length.out=n)
+  ypts = seq(ylim[1],ylim[2],length.out=n)
+
+  M = meshgrid(xpts, ypts)
+
+  x = M$X
+  y = M$Y
+  px=M$X
+  py=M$Y
+  for (i  in 1:n){
+    for (j in 1:n){
+      ans = fun(c(xpts[j],ypts[i]))
+      px[i,j]=ans[1]
+      py[i,j]=ans[2]
+    }
+  }
+
+
+  plot(xlim, ylim, type="n",xlab=xlab,ylab=ylab,main=main); grid()
+  quiver(x, y, px, py, scale = scale, col = col, ...)
+  #return(list(px=px,py=py))
+}
+
+r1 = 1;
+r2 = 1;
+a1 = 1;
+a2 = 1;
+b1 = 0.5;
+b2 = 0.5;
+
+#Given the constraints; the previous variables satisfy them. 
+
+f = function(x){  c(r1*x[1]-a1*x[2]^2-b1*x[1]*x[2],
+    r2*x[2]-a2*x[2]^2-b2*x[1]*x[2])
+}
+
+VectorField(f,xlim = c(0,1.5),ylim = c(0,1.5))
+
+```
+ 
+ 
+ b) Classify each of the four equablibrum points as stable or unstable. 
+ 
+```{r}
+Jacobian2 = function(f,x0,h=1E-4){
+    jax = matrix(0,nrow=2,ncol=2)
+    xph = c(x0[1]+h,x0[2]);xmh=c(x0[1]-h,x0[2])
+    yph = c(x0[1],x0[2]+h);ymh=c(x0[1],x0[2]-h)
+    jax[,1]=(f(xph)-f(xmh))/(2*h)
+    jax[,2]=(f(yph)-f(ymh))/(2*h)            
+    return(jax)
+}
+norm2 = function(v){sqrt(v[1]^2+v[2]^2)}
+zeros = function(f,x0,h=1E-4,tol=1E-4){
+    i = 1
+    p=c(1,1)
+    while (norm2(p)>tol & i<100){
+        p = solve(Jacobian2(f,x0),-f(x0)) # linear algebra step
+        x0 = x0+p
+        #print(i)
+        #print(x0)
+        i=i+1
+    }
+    return(x0)
+}
+
+# Zeros from different starting points, based on what is seen in (a)
+
+x0=c(0,0)
+print(zeros(f,x0))
+x1=c(0.5,0.5)
+print(zeros(f,x1))
+x2=c(1,0)
+print(zeros(f,x2))
+x3=c(2,2)
+print(zeros(f,x3))
+```
+ 
+The 2 Equablibrium Points found are: 
+
+\item (0,0) = Unstable
+
+\item (0.67,0.67) = Stable
+
+The book states that there are four equalibrium points. By looking at te vector field, I tink that they are located near:
+
+\item (1,0)
+
+\item (0,#)
+
+Both of these points are unstable, as they do not fall in between 0 and 1. 
+ 
+c) Can the two species of trees coexist in stable equablbrium? 
+
+Since there is a stable equalibrium point in the first quadrant, both species can exist. 
+ 
+d) Supose that a logging operation removes all but a few or the valuable hardwoos trees in this stand of forest. What does this model predict about the future of the two species of trees?
+
+This model predicts that the tree populations will eventually return to the stable equablirium. This is only the case when the poplations begin in the first quadrant. 
+ 
+Chapter 4 #4: In the whale equation if Example 4.2 we used a logistic model of population growth, where the growth rate of population P in the absence of interspecies competition is
+
+g(P) = r*P(1-(P/K))
+
+In this problem we will be using the simpler growth model 
+
+g(P) = r*P
+
+a) Can both species of whales coexist? Use the five-step method, ans model as a dynamical system in steady state. 
+
+Question: Can both species of whales coexist?
+
+Variables: 
+
+\item B = Blue Whale Population (whales)
+\item F = Fin Whale Population (whales)
+\item grB = Blue whale population growth rate (whales/year)
+\item grF = Fin Whale population growth rate (whales/year)
+\item cB = effect of competition on Blue Whales (whales/year)
+\item cF = effect of competition on Fin Whales (whales/year)
+
+Assumptions: 
+
+\item grb = 0.05*B
+\item grf = 0.08*F
+\item cB = cf = alpha * B * F
+\item B >= 0, F >= 0 
+\item alpha is a positive, real constant number 
+
+Modeling Approach: Dynamical System
+
+Model: 
+
+```{r}
+alpha = 0.000001
+f = function(x){c(
+  (0.05*x[1] - alpha*x[1]*x[2]),
+  (0.08*x[2] - alpha*x[1]*x[2])
+)}
+
+```
+
+Solve: 
+
+```{r}
+x0=c(80000,50000)
+eq1 = zeros(f,x0);print(eq1)
+x1 = c(0,0)
+eq2 = zeros(f,x1); print(eq2)
+```
+
+Answer: The Blue and Fin Whale populations are able to coexist when there are 80000 Blue Whales and 50000 Fin Whales. 
+
+b) Draw the vector field for this model. Indicate the location of each equalibrium point.
+
+```{r}
+ans=vectorfield(f,xlim=c(0,120000),ylim=c(0,100000),n=20,
+                scale=0.05,col="red",main="Whale Population",xlab="BlueWhales",ylab="FinWhales")
+
+```
+
+c) Classify each equalibrium point as stable or unstable
+
+The equalibrium point that we can finsd is unstable. As seen in the vector field, and dieviation from this point will result in large changes in each Whale popularion. 
+
+d) Suppose that there are currently 5000 blue whales and 70000 fin whales. What does this model predict about the future of the two species? 
+
+```{r}
+alpha = 0.000001
+
+f = function(x){c(
+  (0.05*x[1] - alpha*x[1]*x[2]),
+  (0.08*x[2] - alpha*x[1]*x[2])
+)}
+
+x = c(5000,70000)
+
+f(x)
+```
+
+The model predicts that blue whales will go extinct while Fin whales survive. 
+
+Chapter 6 #1: 
+
+a) Use a computer implementation of the algorithum in Fig 6.2 to simulate the discrete-time dynamical system in Eq (6.20) in the case lmbda = 3. Assume that adverse weather conditions caouse a 75% decrease in weapon effectiveness for both sides (w = 0.25). Who wins the battle, and how long does it take? How many divisions of troops to remian on the winning side? 
+
+```{r}
+lambda=3
+
+w=0.25
+
+f=function(x){c((-w*lambda*0.05*x[2]-lambda*(0.005)*x[1]*x[2])*((x[1]>0)*(x[2]>0)),
+                (-w*0.05*x[1]-0.005*x[2])*((x[1]>0)*(x[2]>0)))}
+
+pts=path(f,c(5,2),deltat=1); #print(pts)
+
+plot(pts[,1],pts[,2],xlim=c(0,5),ylim=c(0,2), xlab = "Red", ylab = "Blue")
+
+```
+
+Red wins the battle in 39 hours with 2.2 divisions remaining. 
+
+b) Repeat your analysis for each of the cases w = 0.1, 0.2, 0.5, 0.75, and 0.9, and tabulate your results. Answer the same question as in part (a)
+
+```{r}
+dds=function(w, lambda){
+  f=function(x){c((-w*lambda*0.05*x[2]-lambda*(0.005)*x[1]*x[2])*((x[1]>0)*(x[2]>0)),
+                  (-w*0.05*x[1]-0.005*x[2])*((x[1]>0)*(x[2]>0)))}
+  x=c(5,2)
+  pts=path(f,x,deltat=1)
+  N=length(pts[,1])
+  if (pts[N,1]>pts[N,2]){
+    winner="R"
+    hours=min(which(pts[,2]<0))-1
+    forces=as.numeric(round(pts[N,1],1))
+  }
+  else{
+    winner="B"
+    hours=min(which(pts[,1]<0))-1
+    forces=as.numeric(round(pts[N,2],1))
+  }
+  return(list(winner=winner,hours=hours,forces=forces))
+}
+
+w=c(0.1,0.2,0.25,0.5,0.75,0.9)
+
+ans.winner=0
+ans.hours=0
+ans.forces=0
+l=length(w)
+i=6
+while (i >=0){
+  res=dds(w[i],3)
+  ans.winner[i]=res$winner
+  ans.hours[i]=res$hours
+  ans.forces[i]=res$forces
+  i=i-1
+}
+result=data.frame(weather=w,winner=ans.winner,hours=ans.hours,forces=ans.forces)
+print(result)
+```
+
+c) Which side benefits from fighting in adverse weather conditions? If you were the blue commander, would you expect red to attack on a sunny day or rainy day? 
+
+Red would attack on a suny day. They benefit more from a sunny day than a rainy day. 
+
+d) Examine the sensitivity of you results in parts (a), (b), and (c) to the degree of weapon superoirity of blue over red. Repeat the simulations in parts (a) ans (b) for lambda = 1.5, 2.0, 4.0, and 5.0, and tabluate your results as before. Reconsider your conclusions in part (c). Are they still valid? 
+
+```{r}
+dds=function(w, lambda){
+  f=function(x){c((-w*lambda*0.05*x[2]-lambda*(0.005)*x[1]*x[2])*((x[1]>0)*(x[2]>0)),
+                  (-w*0.05*x[1]-0.005*x[2])*((x[1]>0)*(x[2]>0)))}
+  x=c(5,2)
+  pts=path(f,x,deltat=1)
+  N=length(pts[,1])
+  if (pts[N,1]>pts[N,2]){
+    winner="R"
+    hours=min(which(pts[,2]<0))-1
+    forces=as.numeric(round(pts[N,1],1))
+  }
+  else{
+    winner="B"
+    hours=min(which(pts[,1]<0))-1
+    forces=as.numeric(round(pts[N,2],1))
+  }
+  return(list(winner=winner,hours=hours,forces=forces))
+}
+
+w=c(0.1,0.2,0.5,0.75,0.9)
+
+lambda=c(1.5,2.0,3.0,4.0,5.0)
+
+ans.winner=0
+ans.hours=0
+ans.forces=0
+ans.cond1=0;ans.cond2=0
+N=length(w)
+
+for (i in N){
+  for(j in l:length(lambda)){
+    res=dds(w[i],lambda[j])
+    idx=N*(i-1)+j
+    ans.cond1[idx]=w[i]
+    ans.cond2[idx]=lam[j]
+    ans.winner[idx]=res$winner
+    ans.hours[idx]=res$hours
+    ans.forces[idx]=res$forces
+  } 
+}
+
+result=data.frame(weather=ans.cond1,eff=ans.cond2,winner=ans.winner, hours=ans.hours, forces=ans.forces)
+print(result)
+
+#OR Individually 
+
+#lambda = 1.5 
+
+dds=function(w){
+  f=function(x){c((-w*1.5*0.05*x[2]-1.5*(0.005)*x[1]*x[2])*((x[1]>0)*(x[2]>0)),
+                  (-w*0.05*x[1]-0.005*x[2])*((x[1]>0)*(x[2]>0)))}
+  x=c(5,2)
+  pts=path(f,x,deltat=1)
+  N=length(pts[,1])
+  if (pts[N,1]>pts[N,2]){
+    winner="R"
+    hours=min(which(pts[,2]<0))-1
+    forces=as.numeric(round(pts[N,1],1))
+  }
+  else{
+    winner="B"
+    hours=min(which(pts[,1]<0))-1
+    forces=as.numeric(round(pts[N,2],1))
+  }
+  return(list(winner=winner,hours=hours,forces=forces))
+}
+
+```
+The conclusions in (c) a
